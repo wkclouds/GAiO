@@ -1230,7 +1230,7 @@ button { cursor: pointer; }
 .preview-board-header, .lab-notice { position: relative; display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); font: 700 var(--text-xs)/1 var(--font-mono); letter-spacing: var(--tracking-meta); text-transform: uppercase; }
 .preview-live { border: 1px solid color-mix(in oklch, var(--color-paper) 25%, transparent); border-radius: 999px; padding: .45rem .65rem; color: var(--color-signal); }
 .preview-query { position: relative; max-width: 28rem; margin: var(--space-7) 0 0; border-left: 2px solid var(--color-signal); padding-left: var(--space-4); font: 800 var(--text-lg)/var(--leading-snug) var(--font-display); }
-.preview-orbit { position: absolute; width: 21rem; height: 21rem; right: -1rem; bottom: 2.25rem; border: 1px solid color-mix(in oklch, var(--color-paper) 18%, transparent); border-radius: 50%; animation: pulse-ring 5s var(--ease-in-out) infinite; }
+.preview-orbit { position: absolute; width: 21rem; height: 21rem; left: calc(50% - 9.5rem); bottom: 2.25rem; border: 1px solid color-mix(in oklch, var(--color-paper) 18%, transparent); border-radius: 50%; animation: pulse-ring 5s var(--ease-in-out) infinite; }
 .preview-orbit::before, .preview-orbit::after { content: ""; position: absolute; inset: 17%; border: 1px solid color-mix(in oklch, var(--color-paper) 15%, transparent); border-radius: inherit; }
 .preview-orbit::after { inset: 34%; background: var(--color-signal); }
 .preview-orbit-core { position: absolute; z-index: 2; inset: 35%; display: grid; place-items: center; text-align: center; color: var(--color-ink); font: 800 .67rem/1.2 var(--font-mono); }
@@ -1512,7 +1512,7 @@ button { cursor: pointer; }
   .lab-analysis-grid,
   .lab-readiness { grid-template-columns: minmax(0, 1fr); }
   .visibility-preview-board { min-height: 31rem; }
-  .preview-orbit { width: 18rem; height: 18rem; right: -2rem; }
+  .preview-orbit { width: 18rem; height: 18rem; left: calc(50% - 8.5rem); }
   .visibility-signal-grid { grid-template-columns: minmax(0, 1fr); }
   .visibility-signal-grid article { border-right: 0; border-bottom: var(--rule); }
   .visibility-signal-grid article:last-child { border-bottom: 0; }
