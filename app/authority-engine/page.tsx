@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ExternalLink } from "lucide-react";
 import { AiOverviewProofList } from "@/components/ai-overview-proof";
+import { AuthorityVisibilityGraphic } from "@/components/authority-visibility-graphic";
 import { LayoutFrame } from "@/components/page-elements";
 import { NewsletterSignup } from "@/components/newsletter-signup";
 import { TeamCard } from "@/components/team-card";
@@ -10,6 +11,7 @@ import { authorityPhases, authorityTerms, editorialSources, topicClusters } from
 import { absoluteUrl, siteName } from "@/lib/site";
 
 const publishedAt = "2026-08-17";
+const modifiedAt = "2026-09-15";
 
 export const metadata: Metadata = {
   title: "The GAiO Authority Engine: a step-by-step growth plan",
@@ -41,7 +43,7 @@ export default function AuthorityEnginePage() {
     url,
     mainEntityOfPage: url,
     datePublished: publishedAt,
-    dateModified: publishedAt,
+    dateModified: modifiedAt,
     author: {
       "@type": "Person",
       name: "Waqas K.",
@@ -85,6 +87,19 @@ export default function AuthorityEnginePage() {
             </aside>
           </div>
         </header>
+
+        <section className="section authority-ai-section">
+          <div className="wrap">
+            <div className="split-head authority-ai-intro">
+              <div>
+                <p className="eyebrow">AI visibility, made inspectable</p>
+                <h2 className="display section-title">See how answer signals connect to authority.</h2>
+              </div>
+              <p className="lede">A useful visibility system brings prompts, sentiment, citations, and source evidence into one view—then turns the gaps into practical work.</p>
+            </div>
+            <AuthorityVisibilityGraphic />
+          </div>
+        </section>
 
         <section className="section">
           <div className="wrap">
