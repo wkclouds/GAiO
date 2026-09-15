@@ -20,12 +20,9 @@ export function blogHref(slug: string) {
 
 export const navItems = [
   { href: "/services", label: "Services" },
-  { href: "/visibility-lab", label: "Visibility Lab" },
-  { href: "/proof", label: "Proof" },
-  { href: "/topics", label: "Topics" },
-  { href: blogListingHref, label: "Blog" },
-  { href: "/resources", label: "Resources" },
-  { href: "/about", label: "About" },
+  { href: "/authority-engine", label: "Authority Engine" },
+  { href: blogListingHref, label: "Insights" },
+  { href: "/about", label: "Company" },
 ];
 
 export const engines = [

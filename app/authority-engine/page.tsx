@@ -1,15 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, ExternalLink } from "lucide-react";
+import { ArrowRight, BadgeCheck, ExternalLink, FileCheck2, Link2, Search, Sparkles } from "lucide-react";
 import { AiOverviewProofList } from "@/components/ai-overview-proof";
+import { AuthorityGlossary } from "@/components/authority-glossary";
+import { AuthorityLoop } from "@/components/authority-loop";
+import { AuthorityRoadmap } from "@/components/authority-roadmap";
+import { AuthorityVisibilityGraphic } from "@/components/authority-visibility-graphic";
 import { LayoutFrame } from "@/components/page-elements";
 import { NewsletterSignup } from "@/components/newsletter-signup";
 import { TeamCard } from "@/components/team-card";
 import { team } from "@/lib/content";
-import { authorityPhases, authorityTerms, editorialSources, topicClusters } from "@/lib/editorial";
-import { absoluteUrl, siteName } from "@/lib/site";
+import { editorialSources, topicClusters } from "@/lib/editorial";
+import { absoluteUrl } from "@/lib/site";
 
 const publishedAt = "2026-08-17";
+const modifiedAt = "2026-09-15";
 
 export const metadata: Metadata = {
   title: "The GAiO Authority Engine: a step-by-step growth plan",
@@ -41,7 +46,7 @@ export default function AuthorityEnginePage() {
     url,
     mainEntityOfPage: url,
     datePublished: publishedAt,
-    dateModified: publishedAt,
+    dateModified: modifiedAt,
     author: {
       "@type": "Person",
       name: "Waqas K.",
@@ -60,70 +65,56 @@ export default function AuthorityEnginePage() {
 
   return (
     <LayoutFrame>
-      <article>
+      <article className="authority-engine-page">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
-        <header className="page-hero authority-hero">
+        <header className="authority-hero">
           <div className="wrap authority-hero-grid">
-            <div className="section-intro">
-              <p className="eyebrow">GAiO Authority Engine · v1</p>
-              <h1 className="display headline">Build a domain people remember—and systems can verify.</h1>
-              <p className="lede">The goal is not to look old or publish at maximum volume. It is to build a connected record of useful answers, accountable experts, original proof, and earned attention that becomes more valuable every year.</p>
+            <div className="authority-hero-copy">
+              <p className="home-kicker">GAIO Authority Engine</p>
+              <h1 aria-label="Be The Answer AI finds."><span aria-hidden="true">Be The Answer</span><span aria-hidden="true">AI finds.</span></h1>
+              <p>Turn your expertise into clear answers, credible evidence, and connected content that helps your brand get discovered across Google and AI search.</p>
               <div className="hero-actions">
-                <Link className="button button-signal" href="/assessment">Benchmark your starting point <ArrowRight size={16} /></Link>
-                <Link className="button button-ghost" href="/topics">Explore the topic system</Link>
+                <Link className="button home-button-primary" href="/assessment">Request a GEO assessment <ArrowRight size={16} /></Link>
+                <Link className="button authority-hero-secondary" href="#compounding-loop">Explore the engine</Link>
               </div>
+              <p className="authority-hero-note">No ranking or citation guarantees. Every recommendation is tied to an inspectable source, action, or limitation.</p>
             </div>
-            <aside className="authority-principle">
-              <span className="meta">The compounding loop</span>
-              <ol>
-                <li><strong>Answer</strong><span>one real question well</span></li>
-                <li><strong>Prove</strong><span>the claim and its limits</span></li>
-                <li><strong>Connect</strong><span>it to the right topic and next step</span></li>
-                <li><strong>Distribute</strong><span>the useful insight where people already are</span></li>
-                <li><strong>Update</strong><span>the same durable URL as knowledge changes</span></li>
-              </ol>
-            </aside>
+            <div className="authority-hero-system" role="img" aria-label="Illustration of a question becoming a verified answer through connected content and evidence.">
+              <span className="authority-hero-grid-lines" aria-hidden="true" />
+              <div className="authority-hero-query"><Search size={16} aria-hidden="true" /><span><small>Market question</small><strong>What can this business prove?</strong></span></div>
+              <span className="authority-hero-connector connector-one" aria-hidden="true" />
+              <span className="authority-hero-connector connector-two" aria-hidden="true" />
+              <div className="authority-hero-source source-one"><FileCheck2 size={16} aria-hidden="true" /><span><strong>Expert content</strong><small>Named and reviewed</small></span></div>
+              <div className="authority-hero-source source-two"><Link2 size={16} aria-hidden="true" /><span><strong>Connected evidence</strong><small>Clear source trail</small></span></div>
+              <div className="authority-hero-core"><Sparkles size={21} aria-hidden="true" /><strong>GAIO Engine</strong><small>Source of truth</small></div>
+              <div className="authority-hero-result"><BadgeCheck size={17} aria-hidden="true" /><span><small>Answer-ready signal</small><strong>Clear · credible · connected</strong></span></div>
+            </div>
           </div>
         </header>
 
-        <section className="section">
+        <section id="compounding-loop" className="authority-loop-section">
+          <div className="wrap"><AuthorityLoop /></div>
+        </section>
+
+        <section className="section authority-ai-section">
           <div className="wrap">
-            <div className="split-head">
-              <div><p className="eyebrow">Plain-language glossary</p><h2 className="display section-title">What every part of the engine means.</h2></div>
-              <p className="lede">These terms describe connected editorial and growth systems. None is a shortcut to guaranteed rankings or AI citations.</p>
+            <div className="split-head authority-ai-intro">
+              <div>
+                <p className="eyebrow">AI visibility, made inspectable</p>
+                <h2 className="display section-title">See how answer signals connect to authority.</h2>
+              </div>
+              <p className="lede">A useful visibility system brings prompts, sentiment, citations, and source evidence into one view—then turns the gaps into practical work.</p>
             </div>
-            <dl className="authority-glossary">
-              {authorityTerms.map((item, index) => (
-                <div key={item.term}>
-                  <span className="authority-term-index">{String(index + 1).padStart(2, "0")}</span>
-                  <dt>{item.term}</dt>
-                  <dd>{item.definition}</dd>
-                  <dd className="authority-implementation"><strong>On {siteName}:</strong> {item.implementation}</dd>
-                </div>
-              ))}
-            </dl>
+            <AuthorityVisibilityGraphic />
           </div>
         </section>
 
-        <section className="section section-dark">
-          <div className="wrap">
-            <div className="split-head">
-              <div><p className="eyebrow">Step-by-step update plan</p><h2 className="display section-title">Ninety days to launch the loop. Years to compound it.</h2></div>
-              <p className="lede">Complete the sequence in order. Publishing more content before the system is connected only creates a larger cleanup later.</p>
-            </div>
-            <div className="authority-phase-list">
-              {authorityPhases.map((phase, index) => (
-                <article key={phase.range}>
-                  <div className="authority-phase-heading">
-                    <span className="meta">0{index + 1} · {phase.range}</span>
-                    <h3>{phase.title}</h3>
-                    <p>{phase.outcome}</p>
-                  </div>
-                  <ol>{phase.actions.map((action) => <li key={action}>{action}</li>)}</ol>
-                </article>
-              ))}
-            </div>
-          </div>
+        <section className="authority-glossary-wrap">
+          <div className="wrap"><AuthorityGlossary /></div>
+        </section>
+
+        <section className="authority-roadmap-wrap">
+          <div className="wrap"><AuthorityRoadmap /></div>
         </section>
 
         <section className="section section-muted">

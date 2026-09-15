@@ -62,6 +62,17 @@ export function BlogExplorer({ posts }: BlogExplorerProps) {
     setAuthor("all");
   }
 
+  if (!posts.length) {
+    return (
+      <section className="blog-publishing-empty" aria-labelledby="blog-empty-title">
+        <span className="eyebrow">Publishing desk</span>
+        <h2 className="display section-title" id="blog-empty-title">No public articles have been published yet.</h2>
+        <p>When an editor publishes the first Sanity article, it will appear here and in Latest Insights on the homepage. Drafts stay private.</p>
+        <Link className="button button-primary" href="/topics">Explore the topic hubs <ArrowRight size={16} aria-hidden="true" /></Link>
+      </section>
+    );
+  }
+
   return (
     <>
       {featured ? (
