@@ -40,6 +40,7 @@ export async function POST(request: Request) {
   const id = `newsletter-${createHash("sha256").update(email).digest("hex")}`;
 
   try {
+    const existing = await client.getDocument<{ _id: string; status?: string }>(id);
     await client.createIfNotExists({
       _id: id,
       _type: "newsletterSubscriber",
@@ -55,6 +56,8 @@ export async function POST(request: Request) {
       .set({ email, source, status: "subscribed", lastSubscribedAt: now })
       .setIfMissing({ consentedAt: now })
       .commit();
+
+    return NextResponse.json({ subscribed: true, duplicate: Boolean(existing) }, { status: existing ? 200 : 201 });
   } catch {
     return NextResponse.json(
       { error: "We could not save your signup. Please try again soon." },
@@ -62,5 +65,4 @@ export async function POST(request: Request) {
     );
   }
 
-  return NextResponse.json({ subscribed: true }, { status: 201 });
 }

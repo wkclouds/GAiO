@@ -27,6 +27,7 @@ export const postType = defineType({
       title: "Excerpt",
       type: "text",
       rows: 3,
+      validation: (rule) => rule.required().max(260),
     }),
     defineField({
       name: "author",
@@ -103,6 +104,7 @@ export const postType = defineType({
           name: "alt",
           type: "string",
           title: "Alternative text",
+          validation: (rule) => rule.required().max(180),
         }),
       ],
     }),
@@ -111,6 +113,28 @@ export const postType = defineType({
       title: "Published at",
       type: "datetime",
       initialValue: () => new Date().toISOString(),
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: "updatedAt",
+      title: "Editorial update date",
+      type: "datetime",
+      description: "Optional public date for a substantive editorial update. Sanity also keeps its automatic document update time.",
+    }),
+    defineField({
+      name: "seoTitle",
+      title: "SEO title",
+      type: "string",
+      description: "Optional search and social title. Defaults to the article title.",
+      validation: (rule) => rule.max(70),
+    }),
+    defineField({
+      name: "seoDescription",
+      title: "SEO description",
+      type: "text",
+      rows: 2,
+      description: "Optional search description. Defaults to the excerpt.",
+      validation: (rule) => rule.max(170),
     }),
     defineField({
       name: "featured",
@@ -301,6 +325,8 @@ export const postType = defineType({
               name: "alt",
               type: "string",
               title: "Alternative text",
+              description: "Describe the information or purpose of this image for people who cannot see it.",
+              validation: (rule) => rule.required().max(180),
             }),
             defineField({
               name: "caption",

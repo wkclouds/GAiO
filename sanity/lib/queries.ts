@@ -14,8 +14,11 @@ const postFields = /* groq */ `
   keyTakeaways,
   socialHeadline,
   socialSummary,
+  seoTitle,
+  seoDescription,
   evidence,
   publishedAt,
+  "updatedAt": coalesce(updatedAt, _updatedAt),
   featured,
   likes,
   views,
@@ -24,12 +27,13 @@ const postFields = /* groq */ `
     comments,
     0
   ),
-  "mainImage": select(defined(mainImage.asset) => mainImage, null)
+  "mainImage": select(defined(mainImage.asset) => mainImage, null),
+  "imageAlt": coalesce(mainImage.alt, "")
 `;
 
 /** All published posts for /blog — no artificial cap. */
 export const postsQuery = defineQuery(`
-  *[_type == "post" && defined(slug.current)] | order(publishedAt desc) {
+  *[_type == "post" && !(_id in path("drafts.**")) && defined(slug.current) && defined(publishedAt) && publishedAt <= now()] | order(publishedAt desc) {
     ${postFields}
   }
 `);
@@ -39,21 +43,29 @@ export const postsQuery = defineQuery(`
  * Slice is exclusive end — [0...3] returns up to 3 documents.
  */
 export const latestPostsQuery = defineQuery(`
-  *[_type == "post" && defined(slug.current)]
+  *[_type == "post" && !(_id in path("drafts.**")) && defined(slug.current) && defined(publishedAt) && publishedAt <= now()]
     | order(coalesce(featured, false) desc, publishedAt desc)[0...3] {
     ${postFields}
   }
 `);
 
 export const postBySlugQuery = defineQuery(`
-  *[_type == "post" && slug.current == $slug][0] {
+  *[_type == "post" && !(_id in path("drafts.**")) && defined(slug.current) && slug.current == $slug && defined(publishedAt) && publishedAt <= now()] | order(_updatedAt desc)[0] {
+    ${postFields},
+    body
+  }
+`);
+
+/** Draft-aware detail query. Only used by the token-protected preview route. */
+export const previewPostBySlugQuery = defineQuery(`
+  *[_type == "post" && defined(slug.current) && slug.current == $slug] | order(_updatedAt desc)[0] {
     ${postFields},
     body
   }
 `);
 
 export const postSlugsQuery = defineQuery(`
-  *[_type == "post" && defined(slug.current)][].slug.current
+  *[_type == "post" && !(_id in path("drafts.**")) && defined(slug.current) && defined(publishedAt) && publishedAt <= now()][].slug.current
 `);
 
 export const commentsByPostQuery = defineQuery(`

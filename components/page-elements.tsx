@@ -2,11 +2,12 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
+import { AskGaio } from "@/components/ask-gaio";
 import { Globe } from "@/components/ui/globe";
 import { siteEmails } from "@/lib/site";
 
 export function LayoutFrame({ children }: { children: ReactNode }) {
-  return <div className="site-shell"><a className="skip-link" href="#main-content">Skip to content</a><SiteHeader /><main id="main-content">{children}</main><SiteFooter /></div>;
+  return <div className="site-shell"><a className="skip-link" href="#main-content">Skip to content</a><SiteHeader /><main id="main-content">{children}</main><SiteFooter /><AskGaio /></div>;
 }
 
 export function PageHero({ eyebrow, title, copy, action = true }: { eyebrow: string; title: string; copy: string; action?: boolean }) {

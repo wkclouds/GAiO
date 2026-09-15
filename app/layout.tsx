@@ -1,10 +1,25 @@
 import type { Metadata, Viewport } from "next";
+import { Plus_Jakarta_Sans, Sora } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { AnalyticsEvents } from "@/components/analytics-events";
 import { StyledComponentsRegistry } from "@/components/styled-components-registry";
 import { buildSiteJsonLd } from "@/lib/json-ld";
 import { siteName, siteTagline, siteUrl } from "@/lib/site";
 import "./globals.css";
+
+const sora = Sora({
+  subsets: ["latin"],
+  variable: "--font-sora",
+  weight: ["600", "700", "800"],
+  display: "swap",
+});
+
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-plus-jakarta",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -45,14 +60,14 @@ export const metadata: Metadata = {
   },
 };
 
-export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#141414" };
+export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#f7f9fc" };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const jsonLd = buildSiteJsonLd();
 
   return (
     <html lang="en">
-      <body>
+      <body className={`${sora.variable} ${plusJakarta.variable}`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

@@ -37,7 +37,7 @@ export function NewsletterSignup({ source, compact = false }: NewsletterSignupPr
       return;
     }
 
-    const result = (await response.json().catch(() => ({}))) as { error?: string };
+    const result = (await response.json().catch(() => ({}))) as { error?: string; duplicate?: boolean };
 
     if (!response.ok) {
       setStatus("error");
@@ -47,16 +47,16 @@ export function NewsletterSignup({ source, compact = false }: NewsletterSignupPr
 
     setStatus("success");
     track("newsletter_subscribed", { source });
-    setMessage("You’re on the list. Watch your inbox for the next Answer Signal.");
+    setMessage(result.duplicate ? "You’re already subscribed to The Answer Signal." : "You’re on the list. Watch your inbox for the next Answer Signal.");
     formElement.reset();
   }
 
   return (
     <section className={`newsletter-panel${compact ? " newsletter-panel-compact" : ""}`} aria-labelledby={`newsletter-${source}`}>
       <div className="newsletter-copy">
-        <p className="eyebrow">The Answer Signal by GAiO Engine</p>
-        <h2 className="display newsletter-title" id={`newsletter-${source}`}>Practical research on how businesses get found, cited, and recommended.</h2>
-        <p>One concise edition each week: a tested idea, an evidence note, and a practical action for Google and AI-powered discovery.</p>
+        <p className="newsletter-brand-line"><strong>The Answer Signal</strong><span>By GAIO Engine</span></p>
+        <h2 className="display newsletter-title" id={`newsletter-${source}`}>A clearer view of AI search. One useful email at a time.</h2>
+        <p>Get practical research, an evidence-backed insight, and an action you can apply to your search strategy.</p>
       </div>
       <form className="newsletter-form" onSubmit={submit}>
         <label className="sr-only" htmlFor={`newsletter-email-${source}`}>Work email</label>

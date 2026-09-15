@@ -185,8 +185,11 @@ const components: PortableTextComponents = {
     image: ({ value }) => {
       const url = resolveImageUrl(value, (b) => b.width(1200));
       if (!url) return null;
-      const alt = typeof value?.alt === "string" ? value.alt : "";
       const caption = typeof value?.caption === "string" ? value.caption : "";
+      const suppliedAlt = typeof value?.alt === "string" ? value.alt.trim() : "";
+      // Legacy entries predate the required Studio alt field. Keep them accessible
+      // until editors add a specific description in Sanity.
+      const alt = suppliedAlt || caption || "Supporting visual for this article";
       return (
         <figure className="prose-figure">
           {/* eslint-disable-next-line @next/next/no-img-element */}
