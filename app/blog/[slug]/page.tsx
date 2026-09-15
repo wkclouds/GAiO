@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { draftMode } from "next/headers";
 import { LayoutFrame } from "@/components/page-elements";
 import { PostBody } from "@/components/post-body";
 import { PostComments } from "@/components/post-comments";
@@ -37,12 +38,13 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getInsightBySlug(slug);
+  const { isEnabled } = await draftMode();
+  const post = await getInsightBySlug(slug, isEnabled);
   if (!post) return { title: "Post not found" };
   const canonical = absoluteUrl(`/blog/${post.slug}`);
-  const title = post.socialHeadline || post.title;
-  const description = post.socialSummary || post.excerpt;
-  const images = post.imageUrl ? [{ url: post.imageUrl, alt: post.title }] : [];
+  const title = post.seoTitle || post.socialHeadline || post.title;
+  const description = post.seoDescription || post.socialSummary || post.excerpt;
+  const images = post.imageUrl ? [{ url: post.imageUrl, alt: post.imageAlt || post.title }] : [];
   return {
     title: post.title,
     description: post.excerpt,
@@ -68,10 +70,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogDetailPage({ params }: Props) {
   const { slug } = await params;
-  const post = await getInsightBySlug(slug);
+  const { isEnabled } = await draftMode();
+  const post = await getInsightBySlug(slug, isEnabled);
   if (!post) notFound();
 
-  const persist = post.source === "sanity";
+  const persist = post.source === "sanity" && !isEnabled;
   const [comments, relatedPosts] = await Promise.all([
     persist ? getCommentsForPost(post._id) : Promise.resolve([]),
     getRelatedInsightPosts(post, 3),

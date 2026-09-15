@@ -1,6 +1,6 @@
 /**
  * Public Sanity env. Missing/placeholder values disable live CMS fetches
- * so the site can run on sample insights.
+ * so the site can render a clear publishing-configuration state.
  */
 export const apiVersion =
   process.env.NEXT_PUBLIC_SANITY_API_VERSION || "2025-01-01";

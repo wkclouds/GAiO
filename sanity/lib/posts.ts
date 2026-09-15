@@ -1,12 +1,12 @@
 import type { PortableTextBlock } from "next-sanity";
 import type { SanityImageSource } from "@sanity/image-url";
-import { articles, type Article } from "@/lib/content";
 import { getClient } from "./client";
 import { resolveImageUrl } from "./image";
 import {
   commentsByPostQuery,
   latestPostsQuery,
   postBySlugQuery,
+  previewPostBySlugQuery,
   postSlugsQuery,
   postsQuery,
 } from "./queries";
@@ -32,6 +32,8 @@ export type InsightPost = {
   keyTakeaways: string[];
   socialHeadline: string | null;
   socialSummary: string | null;
+  seoTitle: string | null;
+  seoDescription: string | null;
   evidence: EvidenceItem[];
   publishedAt: string | null;
   updatedAt: string | null;
@@ -40,6 +42,7 @@ export type InsightPost = {
   views: number;
   comments: number;
   imageUrl: string | null;
+  imageAlt: string;
   body?: PortableTextBlock[] | string[];
   source: "sanity" | "sample";
 };
@@ -69,42 +72,19 @@ type SanityPostDoc = {
   keyTakeaways?: string[] | null;
   socialHeadline?: string | null;
   socialSummary?: string | null;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
   evidence?: EvidenceItem[] | null;
   publishedAt?: string | null;
+  updatedAt?: string | null;
   featured?: boolean | null;
   likes?: number | null;
   views?: number | null;
   comments?: number | null;
   mainImage?: SanityImageSource | null;
+  imageAlt?: string | null;
   body?: PortableTextBlock[] | null;
 };
-
-function sampleToInsight(article: Article, index: number): InsightPost {
-  return {
-    _id: `sample-${article.slug}`,
-    title: article.title,
-    slug: article.slug,
-    excerpt: article.excerpt,
-    author: article.author,
-    editor: article.editor,
-    topic: inferTopicSlug({ topic: article.topic }),
-    category: article.category,
-    readTime: article.readTime,
-    keyTakeaways: article.keyTakeaways,
-    socialHeadline: null,
-    socialSummary: null,
-    evidence: [],
-    publishedAt: article.date,
-    updatedAt: article.date,
-    featured: index === 0,
-    likes: 0,
-    views: 0,
-    comments: 0,
-    imageUrl: null,
-    body: article.body,
-    source: "sample",
-  };
-}
 
 function mapSanityPost(doc: SanityPostDoc): InsightPost | null {
   if (!doc?.slug || !doc.title) return null;
@@ -121,14 +101,17 @@ function mapSanityPost(doc: SanityPostDoc): InsightPost | null {
     keyTakeaways: Array.isArray(doc.keyTakeaways) ? doc.keyTakeaways.filter(Boolean).slice(0, 5) : [],
     socialHeadline: doc.socialHeadline ?? null,
     socialSummary: doc.socialSummary ?? null,
+    seoTitle: doc.seoTitle ?? null,
+    seoDescription: doc.seoDescription ?? null,
     evidence: Array.isArray(doc.evidence) ? doc.evidence.filter((item) => item?.finding) : [],
     publishedAt: doc.publishedAt ?? null,
-    updatedAt: doc._updatedAt ?? null,
+    updatedAt: doc.updatedAt ?? doc._updatedAt ?? null,
     featured: Boolean(doc.featured),
     likes: doc.likes ?? 0,
     views: doc.views ?? 0,
     comments: doc.comments ?? 0,
     imageUrl: resolveImageUrl(doc.mainImage, (b) => b.width(800)),
+    imageAlt: doc.imageAlt ?? "",
     body: doc.body ?? undefined,
     source: "sanity",
   };
@@ -138,19 +121,17 @@ async function fetchSanity<T>(
   query: string,
   params: Record<string, unknown> = {},
   tags: string[] = ["sanity-post"],
+  preview = false,
 ): Promise<T | null> {
-  const client = getClient();
+  const client = getClient({ preview });
   if (!client) return null;
   try {
     return await client.fetch<T>(query, params, {
-      next: {
-        revalidate: SANITY_REVALIDATE_SECONDS,
-        tags,
-      },
+      ...(preview ? { cache: "no-store" as const } : { next: { revalidate: SANITY_REVALIDATE_SECONDS, tags } }),
     });
   } catch (error) {
     console.error(
-      "[sanity] fetch failed — falling back to sample insights. Check NEXT_PUBLIC_SANITY_* env and network.",
+      "[sanity] fetch failed. Check NEXT_PUBLIC_SANITY_* environment values and network access.",
       error,
     );
     return null;
@@ -166,10 +147,10 @@ export async function getInsightPosts(): Promise<InsightPost[]> {
     }
   } else {
     console.warn(
-      "[sanity] NEXT_PUBLIC_SANITY_PROJECT_ID missing or placeholder — using sample insights",
+      "[sanity] NEXT_PUBLIC_SANITY_PROJECT_ID is missing or uses a placeholder; live publishing is disabled.",
     );
   }
-  return articles.map(sampleToInsight);
+  return [];
 }
 
 export async function getLatestInsightPosts(limit = 3): Promise<InsightPost[]> {
@@ -182,20 +163,18 @@ export async function getLatestInsightPosts(limit = 3): Promise<InsightPost[]> {
         .slice(0, limit);
     }
   }
-  return articles.slice(0, limit).map(sampleToInsight);
+  return [];
 }
 
-export async function getInsightBySlug(slug: string): Promise<InsightPost | null> {
+export async function getInsightBySlug(slug: string, preview = false): Promise<InsightPost | null> {
   if (isSanityConfigured) {
-    const doc = await fetchSanity<SanityPostDoc | null>(postBySlugQuery, { slug });
+    const doc = await fetchSanity<SanityPostDoc | null>(preview ? previewPostBySlugQuery : postBySlugQuery, { slug }, ["sanity-post", `sanity-post-${slug}`], preview);
     if (doc) {
       const mapped = mapSanityPost(doc);
       if (mapped) return mapped;
     }
   }
-  const sample = articles.find((a) => a.slug === slug);
-  if (!sample) return null;
-  return sampleToInsight(sample, articles.findIndex((a) => a.slug === slug));
+  return null;
 }
 
 export async function getInsightSlugs(): Promise<string[]> {
@@ -203,7 +182,7 @@ export async function getInsightSlugs(): Promise<string[]> {
     const slugs = await fetchSanity<string[]>(postSlugsQuery);
     if (slugs) return slugs.filter(Boolean);
   }
-  return articles.map((a) => a.slug);
+  return [];
 }
 
 export async function getInsightPostsByTopic(topic: TopicSlug): Promise<InsightPost[]> {
